@@ -5,6 +5,7 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  ActivityIndicator,
   StyleSheet,
   AsyncStorage,
   Platform,
@@ -256,22 +257,62 @@ class Home extends React.PureComponent {
                 />
               )}>
               <View style={styles.container}>
-                <FlatList
-                  style={styles.feed}
-                  keyExtractor={(x) => {
-                    return x.postId;
-                  }}
-                  scrollsToTop
-                  ref={this.flatlistRef}
-                  keyboardShouldPersistTaps="always"
-                  refreshing={this.state.refreshing}
-                  onRefresh={this.refetch}
-                  removeClippedSubviews
-                  onEndReachedThreshold={0.5}
-                  data={!this.state.loading && this.state.feed ? this.state.feed : []}
-                  renderItem={this.renderItem}
-                  ItemSeparatorComponent={Separator}
-                />
+                {!this.state.loading && this.state.feed ? (
+                  <FlatList
+                    style={styles.feed}
+                    keyExtractor={(x) => {
+                      return x.postId;
+                    }}
+                    scrollsToTop
+                    ref={this.flatlistRef}
+                    keyboardShouldPersistTaps="always"
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.refetch}
+                    removeClippedSubviews
+                    onEndReachedThreshold={0.5}
+                    data={!this.state.loading && this.state.feed ? this.state.feed : []}
+                    renderItem={this.renderItem}
+                    ItemSeparatorComponent={Separator}
+                  />
+                ) : (
+                  <View
+                    style={{
+                      flex: 1,
+                      width: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    {this.state.loading ? (
+                      <ActivityIndicator
+                        style={{
+                          position: 'absolute',
+                          top: Platform.OS === 'ios' ? Constants.statusBarHeight + 24 : 24,
+                          right: 24,
+                        }}
+                        size="large"
+                        color={colors.black}
+                      />
+                    ) : null}
+                    <TouchableOpacity
+                      style={{
+                        paddingVertical: 8,
+                        paddingHorizontal: 24,
+                        backgroundColor: colors.black,
+                        borderRadius: 12,
+                        marginTop: 16,
+                      }}
+                      onPress={this.refetch}>
+                      <Text
+                        style={{
+                          fontSize: 24,
+                          fontFamily: 'InterUI Medium',
+                          color: 'white',
+                        }}>
+                        Tap to retry
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
                 <View style={{ width: '100%' }}>
                   {this.state.userIdFetchAttempted ? (
                     <React.Fragment>
@@ -433,7 +474,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.appBackground,
   },
-  feed: { flex: 1, width: '100%' },
+  feed: {
+    flex: 1,
+    width: '100%',
+    // marginTop: Constants.statusBarHeight,
+  },
   floatingButton: {
     paddingVertical: 12,
     paddingHorizontal: 16,
