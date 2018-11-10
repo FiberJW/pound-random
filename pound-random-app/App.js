@@ -169,12 +169,7 @@ class App extends React.Component {
           <View
             style={{
               backgroundColor: 'black',
-              top: 0,
-              left: 0,
-              right: 0,
               height: Constants.statusBarHeight,
-              position: 'absolute',
-              zIndex: 100,
             }}
           />
         ) : null}
